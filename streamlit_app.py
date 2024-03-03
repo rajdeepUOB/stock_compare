@@ -8,8 +8,6 @@ from sklearn.metrics import mean_absolute_error, mean_squared_error
 from tensorflow.keras.models import load_model
 import plotly.graph_objs as go
 import tensorflow as tf
-import requests
-from io import BytesIO
 
 # Function to calculate moving averages
 def calculate_moving_average(data, window_size):
@@ -74,8 +72,7 @@ def main():
             elif selected_model == "LSTM":
                 model_url = "https://github.com/rajdeepUWE/stock_market_forecast/raw/master/LSTM.h5"
 
-            response = requests.get(model_url)
-            model = tf.keras.models.load_model(BytesIO(response.content))
+            model = load_model(model_url)
 
             # Scale data
             scaler = MinMaxScaler(feature_range=(0, 1))
