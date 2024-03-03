@@ -40,7 +40,7 @@ def main():
     end_date = st.sidebar.date_input('Select End Date:', datetime.now())
 
     # Model selection
-    selected_model = st.sidebar.radio("Select Model", ("Neural Network", "Random Forest", "Linear Regression", "LSTM"))
+    selected_model = st.sidebar.radio("Select Model", ("Neural Network", "Random Forest", "Linear Regression"))
 
     # Load stock data
     if stock_symbol:
@@ -79,9 +79,6 @@ def main():
             elif selected_model == "Linear Regression":
                 model_url = "https://github.com/rajdeepUWE/stock_market_forecast/raw/master/linear_regression_model.h5"
                 model_filename = "linear_regression_model.h5"
-            elif selected_model == "LSTM":
-                model_url = "https://github.com/rajdeepUWE/stock_market_forecast/raw/master/LSTM.h5"
-                model_filename = "LSTM.h5"
 
             # Download model file
             download_model(model_url, model_filename)
