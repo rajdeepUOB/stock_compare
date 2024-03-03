@@ -8,6 +8,8 @@ from sklearn.metrics import mean_absolute_error, mean_squared_error
 from tensorflow.keras.models import load_model
 import plotly.graph_objs as go
 import tensorflow as tf
+import requests
+from io import BytesIO
 
 # Function to calculate moving averages
 def calculate_moving_average(data, window_size):
@@ -64,19 +66,16 @@ def main():
 
             # Load trained model based on selection
             if selected_model == "Neural Network":
-                model_path = "https://github.com/rajdeepUWE/stock_market_forecast/raw/master/KNN_model.h5"
+                model_url = "https://github.com/rajdeepUWE/stock_market_forecast/raw/master/KNN_model.h5"
             elif selected_model == "Random Forest":
-                model_path = "https://github.com/rajdeepUWE/stock_market_forecast/raw/master/random_forest_model.h5"
+                model_url = "https://github.com/rajdeepUWE/stock_market_forecast/raw/master/random_forest_model.h5"
             elif selected_model == "Linear Regression":
-                model_path = "https://github.com/rajdeepUWE/stock_market_forecast/raw/master/linear_regression_model.h5"
+                model_url = "https://github.com/rajdeepUWE/stock_market_forecast/raw/master/linear_regression_model.h5"
             elif selected_model == "LSTM":
-                model_path = "https://github.com/rajdeepUWE/stock_market_forecast/raw/master/LSTM.h5"
+                model_url = "https://github.com/rajdeepUWE/stock_market_forecast/raw/master/LSTM.h5"
 
-            try:
-                model = load_model(model_path)
-            except Exception as e:
-                st.error(f"Error loading model: {e}")
-                return
+            response = requests.get(model_url)
+            model = tf.keras.models.load_model(BytesIO(response.content))
 
             # Scale data
             scaler = MinMaxScaler(feature_range=(0, 1))
