@@ -70,6 +70,7 @@ def main():
             st.plotly_chart(fig2)
 
             # Load trained model based on selection
+            model_filename = None
             if st.sidebar.button("Download Model"):
                 if selected_model == "Neural Network":
                     model_url = "https://github.com/rajdeepUWE/stock_market_forecast/raw/master/KNN_model.h5"
@@ -83,7 +84,7 @@ def main():
                     
                 download_model(model_url, model_filename)
 
-            if os.path.exists(model_filename):
+            if model_filename and os.path.exists(model_filename):
                 model = load_model(model_filename)
 
                 # Scale data
@@ -113,8 +114,8 @@ def main():
                 st.write(f'Mean Absolute Error (MAE): {mae:.2f}')
                 st.write(f'Mean Squared Error (MSE): {mse:.2f}')
 
-            else:
-                st.warning("Please download the selected model before prediction.")
+            elif not model_filename:
+                st.warning("Please select a model to download.")
 
         except Exception as e:
             st.error(f"Error: {e}")
