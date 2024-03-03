@@ -74,7 +74,11 @@ def main():
 
             model_path = tf.keras.utils.get_file(f"{selected_model}_model.keras", model_url)
 
-            model = load_model(model_path)
+            try:
+                model = load_model(model_path)
+            except Exception as e:
+                st.error(f"Error loading model: {e}")
+                return
 
             # Scale data
             scaler = MinMaxScaler(feature_range=(0, 1))
