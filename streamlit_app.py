@@ -71,16 +71,16 @@ def main():
             # Load trained model based on selection
             model_filename = ""
             if selected_model == "Neural Network":
-                model_url = "https://raw.githubusercontent.com/rajdeepUWE/stock_compare/master/KNN_model.keras"
+                model_url = "https://github.com/rajdeepUWE/stock_compare/raw/master/KNN_model.keras"
                 model_filename = "KNN_model.keras"
             elif selected_model == "Random Forest":
-                model_url = "https://raw.githubusercontent.com/rajdeepUWE/stock_compare/master/random_forest_model.keras"
+                model_url = "https://github.com/rajdeepUWE/stock_compare/raw/master/random_forest_model.keras"
                 model_filename = "random_forest_model.keras"
             elif selected_model == "Linear Regression":
-                model_url = "https://raw.githubusercontent.com/rajdeepUWE/stock_compare/master/linear_regression_model.keras"
+                model_url = "https://github.com/rajdeepUWE/stock_compare/raw/master/linear_regression_model.keras"
                 model_filename = "linear_regression_model.keras"
             elif selected_model == "LSTM":
-                model_url = "https://raw.githubusercontent.com/rajdeepUWE/stock_compare/master/lstm_model.keras"
+                model_url = "https://github.com/rajdeepUWE/stock_compare/raw/master/lstm_model.keras"
                 model_filename = "lstm_model.keras"
 
             # Download model file
