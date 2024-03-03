@@ -70,7 +70,22 @@ def main():
 
             # Additional plots for the selected stock
             st.subheader('Additional Plots')
-            # Add your additional plots here based on the stock_data
+            # Candlestick chart
+            candlestick = go.Candlestick(x=stock_data.index,
+                                         open=stock_data['Open'],
+                                         high=stock_data['High'],
+                                         low=stock_data['Low'],
+                                         close=stock_data['Close'],
+                                         name='Candlestick')
+            candlestick_layout = go.Layout(title='Candlestick Chart')
+            candlestick_fig = go.Figure(data=candlestick, layout=candlestick_layout)
+            st.plotly_chart(candlestick_fig)
+
+            # Volume plot
+            volume_fig = go.Figure()
+            volume_fig.add_trace(go.Bar(x=stock_data.index, y=stock_data['Volume'], name='Volume'))
+            volume_fig.update_layout(title='Volume Plot')
+            st.plotly_chart(volume_fig)
 
             # Load trained model based on selection
             if selected_model == "Neural Network":
