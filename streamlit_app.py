@@ -68,28 +68,6 @@ def main():
             fig2.add_trace(go.Scatter(x=stock_data.index, y=stock_data['MA200'], mode='lines', name='MA200'))
             st.plotly_chart(fig2)
 
-            # Volume Plot
-            st.subheader('Volume')
-            fig3 = go.Figure()
-            fig3.add_trace(go.Bar(x=stock_data.index, y=stock_data['Volume'], name='Volume'))
-            st.plotly_chart(fig3)
-
-            # Volatility Plot
-            st.subheader('Volatility')
-            daily_returns = stock_data['Close'].pct_change()
-            fig4 = go.Figure()
-            fig4.add_trace(go.Scatter(x=stock_data.index, y=daily_returns, mode='lines', name='Daily Returns'))
-            st.plotly_chart(fig4)
-
-            # Candlestick Chart
-            st.subheader('Candlestick Chart')
-            fig5 = go.Figure(data=[go.Candlestick(x=stock_data.index,
-                                                  open=stock_data['Open'],
-                                                  high=stock_data['High'],
-                                                  low=stock_data['Low'],
-                                                  close=stock_data['Close'])])
-            st.plotly_chart(fig5)
-
             # Load trained model based on selection
             if selected_model == "Neural Network":
                 model_url = "https://github.com/rajdeepUWE/stock_market_forecast/raw/master/KNN_model.h5"
@@ -117,10 +95,10 @@ def main():
 
             # Plot original vs predicted prices
             st.subheader('Original vs Predicted Prices')
-            fig6 = go.Figure()
-            fig6.add_trace(go.Scatter(x=stock_data.index, y=stock_data['Close'], mode='lines', name='Original Price'))
-            fig6.add_trace(go.Scatter(x=stock_data.index[100:], y=y_pred.flatten(), mode='lines', name='Predicted Price'))
-            st.plotly_chart(fig6)
+            fig3 = go.Figure()
+            fig3.add_trace(go.Scatter(x=stock_data.index, y=stock_data['Close'], mode='lines', name='Original Price'))
+            fig3.add_trace(go.Scatter(x=stock_data.index[100:], y=y_pred.flatten(), mode='lines', name='Predicted Price'))
+            st.plotly_chart(fig3)
 
             # Evaluation metrics
             y_true = stock_data['Close'].values[100:]
