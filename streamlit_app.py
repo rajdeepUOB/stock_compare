@@ -5,8 +5,10 @@ import yfinance as yf
 from datetime import datetime, timedelta
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.metrics import mean_absolute_error, mean_squared_error
+from tensorflow.keras.models import load_model
 import plotly.graph_objs as go
 import requests
+import os
 
 # Function to calculate moving averages
 def calculate_moving_average(data, window_size):
@@ -18,6 +20,12 @@ def create_dataset(data, look_back=100):
     for i in range(len(data) - look_back):
         X.append(data[i:(i + look_back)])
     return np.array(X)
+
+# Function to download model file
+def download_model(model_url, model_filename):
+    response = requests.get(model_url)
+    with open(model_filename, 'wb') as f:
+        f.write(response.content)
 
 # Streamlit app
 def main():
@@ -32,7 +40,7 @@ def main():
     end_date = st.sidebar.date_input('Select End Date:', datetime.now())
 
     # Model selection
-    selected_model = st.sidebar.radio("Select Model", ("Neural Network", "Random Forest"))
+    selected_model = st.sidebar.radio("Select Model", ("Neural Network", "Random Forest", "Linear Regression", "LSTM"))
 
     # Load stock data
     if stock_symbol:
@@ -68,12 +76,18 @@ def main():
             elif selected_model == "Random Forest":
                 model_url = "https://github.com/rajdeepUWE/stock_market_forecast/raw/master/random_forest_model.h5"
                 model_filename = "random_forest_model.h5"
+            elif selected_model == "Linear Regression":
+                model_url = "https://github.com/rajdeepUWE/stock_market_forecast/raw/master/linear_regression_model.h5"
+                model_filename = "linear_regression_model.h5"
+            elif selected_model == "LSTM":
+                model_url = "https://github.com/rajdeepUWE/stock_market_forecast/raw/master/LSTM.h5"
+                model_filename = "LSTM.h5"
 
             # Download model file
-            response = requests.get(model_url)
+            download_model(model_url, model_filename)
 
             # Load model
-            model = response.content
+            model = load_model(model_filename)
 
             # Scale data
             scaler = MinMaxScaler(feature_range=(0, 1))
