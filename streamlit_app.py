@@ -7,7 +7,7 @@ from sklearn.preprocessing import MinMaxScaler
 from sklearn.metrics import mean_absolute_error, mean_squared_error
 from tensorflow.keras.models import load_model
 import plotly.graph_objs as go
-import requests
+import tensorflow as tf
 
 # Function to calculate moving averages
 def calculate_moving_average(data, window_size):
@@ -19,12 +19,6 @@ def create_dataset(data, look_back=100):
     for i in range(len(data) - look_back):
         X.append(data[i:(i + look_back)])
     return np.array(X)
-
-# Function to download model file
-def download_model(url, filename):
-    response = requests.get(url)
-    with open(filename, 'wb') as f:
-        f.write(response.content)
 
 # Streamlit app
 def main():
@@ -69,25 +63,18 @@ def main():
             st.plotly_chart(fig2)
 
             # Load trained model based on selection
-            model_filename = ""
             if selected_model == "Neural Network":
-                model_url = "https://raw.githubusercontent.com/rajdeepUWE/stock_compare/master/KNN_model.keras"
-                model_filename = "KNN_model.keras"
+                model_url = "https://github.com/rajdeepUWE/stock_compare/raw/master/KNN_model.keras"
             elif selected_model == "Random Forest":
-                model_url = "https://raw.githubusercontent.com/rajdeepUWE/stock_compare/master/random_forest_model.keras"
-                model_filename = "random_forest_model.keras"
+                model_url = "https://github.com/rajdeepUWE/stock_compare/raw/master/random_forest_model.keras"
             elif selected_model == "Linear Regression":
-                model_url = "https://raw.githubusercontent.com/rajdeepUWE/stock_compare/master/linear_regression_model.keras"
-                model_filename = "linear_regression_model.keras"
+                model_url = "https://github.com/rajdeepUWE/stock_compare/raw/master/linear_regression_model.keras"
             elif selected_model == "LSTM":
-                model_url = "https://raw.githubusercontent.com/rajdeepUWE/stock_compare/master/lstm_model.keras"
-                model_filename = "lstm_model.keras"
+                model_url = "https://github.com/rajdeepUWE/stock_compare/raw/master/lstm_model.keras"
 
-            # Download model file
-            download_model(model_url, model_filename)
+            model_path = tf.keras.utils.get_file(f"{selected_model}_model.keras", model_url)
 
-            # Load model
-            model = load_model(model_filename)
+            model = load_model(model_path)
 
             # Scale data
             scaler = MinMaxScaler(feature_range=(0, 1))
