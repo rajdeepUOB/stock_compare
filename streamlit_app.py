@@ -68,6 +68,10 @@ def main():
             fig2.add_trace(go.Scatter(x=stock_data.index, y=stock_data['MA200'], mode='lines', name='MA200'))
             st.plotly_chart(fig2)
 
+            # Additional plots for the selected stock
+            st.subheader('Additional Plots')
+            # Add your additional plots here based on the stock_data
+
             # Load trained model based on selection
             if selected_model == "Neural Network":
                 model_url = "https://github.com/rajdeepUWE/stock_market_forecast/raw/master/KNN_model.h5"
