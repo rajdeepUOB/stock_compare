@@ -8,6 +8,8 @@ from sklearn.metrics import mean_absolute_error, mean_squared_error
 from tensorflow.keras.models import load_model
 import plotly.graph_objs as go
 import tensorflow as tf
+import hashlib
+import requests
 
 # Function to calculate moving averages
 def calculate_moving_average(data, window_size):
@@ -19,6 +21,32 @@ def create_dataset(data, look_back=100):
     for i in range(len(data) - look_back):
         X.append(data[i:(i + look_back)])
     return np.array(X)
+
+# Function to download model file and check integrity
+def download_and_check_model(model_url, local_model_path):
+    try:
+        # Download the model file from GitHub
+        response = requests.get(model_url)
+        with open(local_model_path, 'wb') as f:
+            f.write(response.content)
+
+        # Compute checksum of the downloaded file
+        remote_checksum = hashlib.sha256(response.content).hexdigest()
+
+        # Compute checksum of the local file
+        with open(local_model_path, 'rb') as f:
+            local_checksum = hashlib.sha256(f.read()).hexdigest()
+
+        # Compare checksums
+        if remote_checksum != local_checksum:
+            st.error("Error: Model file checksums do not match. The file may be corrupted.")
+            return False
+        else:
+            return True
+
+    except Exception as e:
+        st.error(f"Error downloading or checking model file: {e}")
+        return False
 
 # Streamlit app
 def main():
@@ -72,13 +100,14 @@ def main():
             elif selected_model == "LSTM":
                 model_url = "https://github.com/rajdeepUWE/stock_compare/raw/master/lstm_model.keras"
 
-            model_path = tf.keras.utils.get_file(f"{selected_model}_model.keras", model_url)
+            local_model_path = tf.keras.utils.get_file(f"{selected_model}_model.keras", model_url)
 
-            print("Model Path:", model_path)
+            # Download and check model file integrity
+            if not download_and_check_model(model_url, local_model_path):
+                return
 
             try:
-                model = load_model(model_path)
-                print("Model loaded successfully!")
+                model = load_model(local_model_path)
             except Exception as e:
                 st.error(f"Error loading model: {e}")
                 return
