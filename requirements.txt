@@ -7,3 +7,4 @@ plotly
 keras
 tensorflow
 protobuf
+requests
