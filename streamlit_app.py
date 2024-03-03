@@ -8,7 +8,6 @@ from sklearn.metrics import mean_absolute_error, mean_squared_error
 from tensorflow.keras.models import load_model
 import plotly.graph_objs as go
 import requests
-import talib
 
 # Function to calculate moving averages
 def calculate_moving_average(data, window_size):
@@ -91,49 +90,6 @@ def main():
                                                   close=stock_data['Close'])])
             st.plotly_chart(fig5)
 
-            # Technical Indicators
-            st.subheader('Technical Indicators')
-            rsi = talib.RSI(stock_data['Close'])
-            macd, macdsignal, _ = talib.MACD(stock_data['Close'])
-            upper, middle, lower = talib.BBANDS(stock_data['Close'])
-            fig6 = go.Figure()
-            fig6.add_trace(go.Scatter(x=stock_data.index, y=rsi, mode='lines', name='RSI'))
-            fig6.add_trace(go.Scatter(x=stock_data.index, y=macd, mode='lines', name='MACD'))
-            fig6.add_trace(go.Scatter(x=stock_data.index, y=upper, mode='lines', name='Upper BBand'))
-            fig6.add_trace(go.Scatter(x=stock_data.index, y=middle, mode='lines', name='Middle BBand'))
-            fig6.add_trace(go.Scatter(x=stock_data.index, y=lower, mode='lines', name='Lower BBand'))
-            st.plotly_chart(fig6)
-
-            # Correlation Heatmap
-            st.subheader('Correlation Heatmap')
-            correlation_data = yf.download(stock_symbol, start=start_date - timedelta(days=365), end=end_date)
-            correlation_heatmap = correlation_data['Close'].pct_change().corr()
-            fig7 = go.Figure(data=go.Heatmap(z=correlation_heatmap.values,
-                                              x=correlation_heatmap.index,
-                                              y=correlation_heatmap.columns))
-            st.plotly_chart(fig7)
-
-            # Histogram of Returns
-            st.subheader('Histogram of Returns')
-            fig8 = go.Figure()
-            fig8.add_trace(go.Histogram(x=daily_returns, nbinsx=50, name='Returns'))
-            st.plotly_chart(fig8)
-
-            # Price Distribution Plot
-            st.subheader('Price Distribution Plot')
-            fig9 = go.Figure()
-            fig9.add_trace(go.Histogram(x=stock_data['Close'], nbinsx=50, name='Price'))
-            st.plotly_chart(fig9)
-
-            # Seasonal Decomposition
-            st.subheader('Seasonal Decomposition')
-            decomposition = seasonal_decompose(stock_data['Close'], model='additive', period=30)
-            fig10 = go.Figure()
-            fig10.add_trace(go.Scatter(x=stock_data.index, y=decomposition.trend, mode='lines', name='Trend'))
-            fig10.add_trace(go.Scatter(x=stock_data.index, y=decomposition.seasonal, mode='lines', name='Seasonal'))
-            fig10.add_trace(go.Scatter(x=stock_data.index, y=decomposition.resid, mode='lines', name='Residual'))
-            st.plotly_chart(fig10)
-
             # Load trained model based on selection
             if selected_model == "Neural Network":
                 model_url = "https://github.com/rajdeepUWE/stock_market_forecast/raw/master/KNN_model.h5"
@@ -161,10 +117,10 @@ def main():
 
             # Plot original vs predicted prices
             st.subheader('Original vs Predicted Prices')
-            fig11 = go.Figure()
-            fig11.add_trace(go.Scatter(x=stock_data.index, y=stock_data['Close'], mode='lines', name='Original Price'))
-            fig11.add_trace(go.Scatter(x=stock_data.index[100:], y=y_pred.flatten(), mode='lines', name='Predicted Price'))
-            st.plotly_chart(fig11)
+            fig6 = go.Figure()
+            fig6.add_trace(go.Scatter(x=stock_data.index, y=stock_data['Close'], mode='lines', name='Original Price'))
+            fig6.add_trace(go.Scatter(x=stock_data.index[100:], y=y_pred.flatten(), mode='lines', name='Predicted Price'))
+            st.plotly_chart(fig6)
 
             # Evaluation metrics
             y_true = stock_data['Close'].values[100:]
