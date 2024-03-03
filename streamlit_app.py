@@ -74,8 +74,11 @@ def main():
 
             model_path = tf.keras.utils.get_file(f"{selected_model}_model.keras", model_url)
 
+            print("Model Path:", model_path)
+
             try:
                 model = load_model(model_path)
+                print("Model loaded successfully!")
             except Exception as e:
                 st.error(f"Error loading model: {e}")
                 return
