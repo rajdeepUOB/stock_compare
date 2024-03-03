@@ -70,65 +70,51 @@ def main():
             st.plotly_chart(fig2)
 
             # Load trained model based on selection
-            if selected_model == "Neural Network":
-                model_url = "https://github.com/rajdeepUWE/stock_market_forecast/raw/master/KNN_model.h5"
-                model_filename = "KNN_model.h5"
-            elif selected_model == "Random Forest":
-                model_url = "https://github.com/rajdeepUWE/stock_market_forecast/raw/master/random_forest_model.h5"
-                model_filename = "random_forest_model.h5"
-            elif selected_model == "Linear Regression":
-                model_url = "https://github.com/rajdeepUWE/stock_market_forecast/raw/master/linear_regression_model.h5"
-                model_filename = "linear_regression_model.h5"
+            if st.sidebar.button("Download Model"):
+                if selected_model == "Neural Network":
+                    model_url = "https://github.com/rajdeepUWE/stock_market_forecast/raw/master/KNN_model.h5"
+                    model_filename = "KNN_model.h5"
+                elif selected_model == "Random Forest":
+                    model_url = "https://github.com/rajdeepUWE/stock_market_forecast/raw/master/random_forest_model.h5"
+                    model_filename = "random_forest_model.h5"
+                elif selected_model == "Linear Regression":
+                    model_url = "https://github.com/rajdeepUWE/stock_market_forecast/raw/master/linear_regression_model.h5"
+                    model_filename = "linear_regression_model.h5"
+                    
+                download_model(model_url, model_filename)
 
-            # Download model file
-            download_model(model_url, model_filename)
+            if os.path.exists(model_filename):
+                model = load_model(model_filename)
 
-            # Load model
-            model = load_model(model_filename)
+                # Scale data
+                scaler = MinMaxScaler(feature_range=(0, 1))
+                scaled_data = scaler.fit_transform(np.array(stock_data['Close']).reshape(-1, 1))
 
-            # Scale data
-            scaler = MinMaxScaler(feature_range=(0, 1))
-            scaled_data = scaler.fit_transform(np.array(stock_data['Close']).reshape(-1, 1))
+                # Prepare data for prediction
+                x_pred = create_dataset(scaled_data)
 
-            # Prepare data for prediction
-            x_pred = create_dataset(scaled_data)
+                # Predict stock prices
+                y_pred = model.predict(x_pred)
+                y_pred = scaler.inverse_transform(y_pred)
 
-            # Predict stock prices
-            y_pred = model.predict(x_pred)
-            y_pred = scaler.inverse_transform(y_pred)
+                # Plot original vs predicted prices
+                st.subheader('Original vs Predicted Prices')
+                fig3 = go.Figure()
+                fig3.add_trace(go.Scatter(x=stock_data.index, y=stock_data['Close'], mode='lines', name='Original Price'))
+                fig3.add_trace(go.Scatter(x=stock_data.index[100:], y=y_pred.flatten(), mode='lines', name='Predicted Price'))
+                st.plotly_chart(fig3)
 
-            # Plot original vs predicted prices
-            st.subheader('Original vs Predicted Prices')
-            fig3 = go.Figure()
-            fig3.add_trace(go.Scatter(x=stock_data.index, y=stock_data['Close'], mode='lines', name='Original Price'))
-            fig3.add_trace(go.Scatter(x=stock_data.index[100:], y=y_pred.flatten(), mode='lines', name='Predicted Price'))
-            st.plotly_chart(fig3)
+                # Evaluation metrics
+                y_true = stock_data['Close'].values[100:]
+                mae = mean_absolute_error(y_true, y_pred)
+                mse = mean_squared_error(y_true, y_pred)
 
-            # Evaluation metrics
-            y_true = stock_data['Close'].values[100:]
-            mae = mean_absolute_error(y_true, y_pred)
-            mse = mean_squared_error(y_true, y_pred)
+                st.subheader('Model Evaluation')
+                st.write(f'Mean Absolute Error (MAE): {mae:.2f}')
+                st.write(f'Mean Squared Error (MSE): {mse:.2f}')
 
-            st.subheader('Model Evaluation')
-            st.write(f'Mean Absolute Error (MAE): {mae:.2f}')
-            st.write(f'Mean Squared Error (MSE): {mse:.2f}')
-
-            # Forecasting
-            forecast_dates = [stock_data.index[-1] + timedelta(days=i) for i in range(1, 31)]
-            forecast = pd.DataFrame(index=forecast_dates, columns=['Forecast'])
-
-            # Use the last 100 days of data for forecasting
-            last_100_days = stock_data['Close'].tail(100)
-            last_100_days_scaled = scaler.transform(np.array(last_100_days).reshape(-1, 1))
-
-            for i in range(30):
-                x_forecast = last_100_days_scaled[-100:].reshape(1, -1)
-                y_forecast = model.predict(x_forecast)
-                forecast.iloc[i] = scaler.inverse_transform(y_forecast)[0][0]
-                last_100_days_scaled = np.append(last_100_days_scaled, y_forecast)
-
-            st.subheader('30-Day Forecast')
-            st.write(forecast)
+            else:
+                st.warning("Please download the selected model before prediction.")
 
         except Exception as e:
             st.error(f"Error: {e}")
