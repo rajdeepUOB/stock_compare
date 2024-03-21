@@ -4,7 +4,6 @@ import pandas as pd
 import yfinance as yf
 from datetime import datetime, timedelta
 from sklearn.preprocessing import MinMaxScaler
-from sklearn.metrics import mean_absolute_error, mean_squared_error
 from tensorflow.keras.models import load_model
 import plotly.graph_objs as go
 import requests
@@ -121,15 +120,6 @@ def main():
             fig3.add_trace(go.Scatter(x=stock_data.index, y=stock_data['Close'], mode='lines', name='Original Price'))
             fig3.add_trace(go.Scatter(x=stock_data.index[100:], y=y_pred.flatten(), mode='lines', name='Predicted Price'))
             st.plotly_chart(fig3)
-
-            # Evaluation metrics
-            y_true = stock_data['Close'].values[100:]
-            mae = mean_absolute_error(y_true, y_pred)
-            mse = mean_squared_error(y_true, y_pred)
-
-            st.subheader('Model Evaluation')
-            st.write(f'Mean Absolute Error (MAE): {mae:.2f}')
-            st.write(f'Mean Squared Error (MSE): {mse:.2f}')
 
             # Forecasting
             forecast_dates = [stock_data.index[-1] + timedelta(days=i) for i in range(1, 31)]
