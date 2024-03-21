@@ -4,7 +4,8 @@ import pandas as pd
 import yfinance as yf
 from datetime import datetime, timedelta
 from sklearn.preprocessing import MinMaxScaler
-from sklearn.metrics import mean_absolute_error, mean_squared_error
+from sklearn.metrics import mean_absolute_error
+from sklearn.metrics import mean_squared_error
 from tensorflow.keras.models import load_model
 import plotly.graph_objs as go
 import requests
