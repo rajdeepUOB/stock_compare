@@ -101,9 +101,6 @@ def main():
             # Load model
             model = load_model(model_filename)
 
-            # Compile the model with appropriate loss function
-            model.compile(optimizer='adam', loss='mean_squared_error', metrics=['mae', 'mse'])
-
             # Scale data
             scaler = MinMaxScaler(feature_range=(0, 1))
             scaled_data = scaler.fit_transform(np.array(stock_data['Close']).reshape(-1, 1))
